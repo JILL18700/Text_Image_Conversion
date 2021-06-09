@@ -92,7 +92,6 @@ class CondGANTrainer(object):
         c_mean_logsigma = self.model.generate_condition(embeddings)
         mean = c_mean_logsigma[0]
         if cfg.TRAIN.COND_AUGMENTATION:
-            # epsilon = tf.random_normal(tf.shape(mean))
             epsilon = tf.truncated_normal(tf.shape(mean))
             stddev = tf.exp(c_mean_logsigma[1])
             c = mean + stddev * epsilon
@@ -101,7 +100,6 @@ class CondGANTrainer(object):
         else:
             c = mean
             kl_loss = 0
-        # TODO: play with the coefficient for KL
         return c, cfg.TRAIN.COEFF.KL * kl_loss
 
     def init_opt(self):
@@ -363,15 +361,14 @@ class CondGANTrainer(object):
         scipy.misc.imsave('%s/hr_fake_test.jpg' %
                           (self.log_dir), hr_gen_samples[1])
 
-        # pfi_train = open(self.log_dir + "/train.txt", "w")
+        # 
         pfi_test = open(self.log_dir + "/test.txt", "w")
         for row in range(n):
-            # pfi_train.write('\n***row %d***\n' % row)
-            # pfi_train.write(captions_train[row * n])
+            
 
             pfi_test.write('\n***row %d***\n' % row)
             pfi_test.write(captions_test[row * n])
-        # pfi_train.close()
+        
         pfi_test.close()
 
         return img_summary, hr_img_summary
@@ -383,12 +380,11 @@ class CondGANTrainer(object):
         if len(self.model_path) > 0:
             print("Reading model parameters from %s" % self.model_path)
             all_vars = tf.trainable_variables()
-            # all_vars = tf.all_variables()
             restore_vars = []
             for var in all_vars:
                 if var.name.startswith('g_') or var.name.startswith('d_'):
                     restore_vars.append(var)
-                    # print(var.name)
+                    
             saver = tf.train.Saver(restore_vars)
             saver.restore(sess, self.model_path)
 
@@ -464,7 +460,6 @@ class CondGANTrainer(object):
                 saver = tf.train.Saver(tf.all_variables(),
                                        keep_checkpoint_every_n_hours=5)
 
-                # summary_op = tf.merge_all_summaries()
                 summary_writer = tf.train.SummaryWriter(self.log_dir,
                                                         sess.graph)
 
@@ -483,7 +478,6 @@ class CondGANTrainer(object):
                 lr_decay_step = cfg.TRAIN.LR_DECAY_EPOCH
                 number_example = self.dataset.train._num_examples
                 updates_per_epoch = int(number_example / self.batch_size)
-                # int((counter + lr_decay_step/2) / lr_decay_step)
                 decay_start = cfg.TRAIN.PRETRAINED_EPOCH
                 epoch_start = int(counter / updates_per_epoch)
                 for epoch in range(epoch_start, self.max_epoch):
@@ -524,7 +518,7 @@ class CondGANTrainer(object):
                     dic_logs = {}
                     for k, v in zip(log_keys, avg_log_vals):
                         dic_logs[k] = v
-                        # print(k, v)
+                        
 
                     log_line = "; ".join("%s: %s" %
                                          (str(k), str(dic_logs[k]))
@@ -661,8 +655,6 @@ class CondGANTrainer(object):
                     print("Reading model parameters from %s" % self.model_path)
                     saver = tf.train.Saver(tf.all_variables())
                     saver.restore(sess, self.model_path)
-                    # self.eval_one_dataset(sess, self.dataset.train,
-                    #                       self.log_dir, subset='train')
                     self.eval_one_dataset(sess, self.dataset.test,
                                           self.log_dir, subset='test')
                 else:

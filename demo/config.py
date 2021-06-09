@@ -9,7 +9,7 @@ from easydict import EasyDict as edict
 __C = edict()
 cfg = __C
 
-# Dataset name: flowers, birds
+# Dataset name: birds
 __C.DATASET_NAME = 'birds'
 __C.EMBEDDING_TYPE = 'cnn-rnn'
 __C.CONFIG_NAME = ''
@@ -67,11 +67,9 @@ def _merge_a_into_b(a, b):
         return
 
     for k, v in a.items():
-        # a must specify keys that are in b
         if not b.__contains__(k):
             raise KeyError('{} is not a valid config key'.format(k))
 
-        # the types must match, too
         old_type = type(b[k])
         if old_type is not type(v):
             if isinstance(b[k], np.ndarray):
@@ -81,7 +79,6 @@ def _merge_a_into_b(a, b):
                                   'for config key: {}').format(type(b[k]),
                                                                type(v), k))
 
-        # recursively merge dicts
         if type(v) is edict:
             try:
                 _merge_a_into_b(a[k], b[k])

@@ -1,2 +1,2 @@
-- [Preprocessed text embeddings](https://drive.google.com/drive/folders/1D-Le8kryakmJ-pyr1s3Guy0VjHfn5bIM?usp=sharing)
+- [Preprocessed text embeddings](https://drive.google.com/file/d/0B3y_msrWZaXLT1BZdVdycDY5TEE/view?resourcekey=0-sZrhftoEfdvHq6MweAeCjA)
 - [CUB Dataset](http://www.vision.caltech.edu/visipedia/CUB-200-2011.html)

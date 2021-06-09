@@ -2,8 +2,8 @@
 This is the implementation for the research paper [**StackGAN: Text to Photo-realistic Image Synthesis with Stacked Generative Adversarial Networks**](https://arxiv.org/pdf/1612.03242.pdf).   
 
 #### Dependencies
-- python 2.7
-- TensorFlow 0.11
+- python 3.6
+- TensorFlow 1.7
 - [skip-thought](https://github.com/ryankiros/skip-thoughts) text-encoder
 - pip install the following packages:
  	- prettytensor
@@ -17,7 +17,9 @@ This is the implementation for the research paper [**StackGAN: Text to Photo-rea
 Download the [birds](http://www.vision.caltech.edu/visipedia/CUB-200-2011.html)  image data. Extract them to **Data/birds/**.
 
 #### Preprocessing 
-Type the following command to preprocess the images: 
+- Download our preprocessed text embeddings.
+
+- Type the following command to preprocess the images: 
 
 `python misc/preprocess_birds.py`
 

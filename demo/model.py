@@ -7,9 +7,6 @@ import custom_ops
 from custom_ops import leaky_rectify
 from config import cfg
 
-# TODO:  Does template.constrct() really shared the computation
-# when multipel times of construct are done
-
 
 class CondGAN(object):
     def __init__(self, lr_imsize, hr_lr_ratio):
@@ -37,9 +34,6 @@ class CondGAN(object):
         else:
             raise NotImplementedError
 
-    # conditioning augmentation structure for text embedding
-    # are shared by g and hr_g
-    # g and hr_g build this structure separately and do not share parameters
     def generate_condition(self, c_var):
         conditions =\
             (pt.wrap(c_var).
@@ -75,7 +69,6 @@ class CondGAN(object):
 
         node2_0 = \
             (node1.
-             # custom_deconv2d([0, self.s8, self.s8, self.gf_dim * 4], k_h=4, k_w=4).
              apply(tf.image.resize_nearest_neighbor, [self.s8, self.s8]).
              custom_conv2d(self.gf_dim * 4, k_h=3, k_w=3, d_h=1, d_w=1).
              conv_batch_norm())
@@ -96,17 +89,14 @@ class CondGAN(object):
 
         output_tensor = \
             (node2.
-             # custom_deconv2d([0, self.s4, self.s4, self.gf_dim * 2], k_h=4, k_w=4).
              apply(tf.image.resize_nearest_neighbor, [self.s4, self.s4]).
              custom_conv2d(self.gf_dim * 2, k_h=3, k_w=3, d_h=1, d_w=1).
              conv_batch_norm().
              apply(tf.nn.relu).
-             # custom_deconv2d([0, self.s2, self.s2, self.gf_dim], k_h=4, k_w=4).
              apply(tf.image.resize_nearest_neighbor, [self.s2, self.s2]).
              custom_conv2d(self.gf_dim, k_h=3, k_w=3, d_h=1, d_w=1).
              conv_batch_norm().
              apply(tf.nn.relu).
-             # custom_deconv2d([0] + list(self.image_shape), k_h=4, k_w=4).
              apply(tf.image.resize_nearest_neighbor, [self.s, self.s]).
              custom_conv2d(3, k_h=3, k_w=3, d_h=1, d_w=1).
              apply(tf.nn.tanh))
@@ -158,22 +148,18 @@ class CondGAN(object):
     def hr_generator(self, x_c_code):
         output_tensor = \
             (pt.wrap(x_c_code).  # -->s4 * s4 * gf_dim*4
-             # custom_deconv2d([0, self.s2, self.s2, self.gf_dim * 2], k_h=4, k_w=4).  # -->s2 * s2 * gf_dim*2
              apply(tf.image.resize_nearest_neighbor, [self.s2, self.s2]).
              custom_conv2d(self.gf_dim * 2, k_h=3, k_w=3, d_h=1, d_w=1).
              conv_batch_norm().
              apply(tf.nn.relu).
-             # custom_deconv2d([0, self.s, self.s, self.gf_dim], k_h=4, k_w=4).  # -->s * s * gf_dim
              apply(tf.image.resize_nearest_neighbor, [self.s, self.s]).
              custom_conv2d(self.gf_dim, k_h=3, k_w=3, d_h=1, d_w=1).
              conv_batch_norm().
              apply(tf.nn.relu).
-             # custom_deconv2d([0, self.s * 2, self.s * 2, self.gf_dim // 2], k_h=4, k_w=4).  # -->2s * 2s * gf_dim/2
              apply(tf.image.resize_nearest_neighbor, [self.s * 2, self.s * 2]).
              custom_conv2d(self.gf_dim // 2, k_h=3, k_w=3, d_h=1, d_w=1).
              conv_batch_norm().
              apply(tf.nn.relu).
-             # custom_deconv2d([0, self.s * 4, self.s * 4, self.gf_dim // 4], k_h=4, k_w=4).  # -->4s * 4s * gf_dim//4
              apply(tf.image.resize_nearest_neighbor, [self.s * 4, self.s * 4]).
              custom_conv2d(self.gf_dim // 4, k_h=3, k_w=3, d_h=1, d_w=1).
              conv_batch_norm().
@@ -206,8 +192,6 @@ class CondGAN(object):
         else:
             raise NotImplementedError
 
-    # structure shared by d and hr_d
-    # d and hr_d build this structure separately and do not share parameters
     def context_embedding(self):
         template = (pt.template("input").
                     custom_fully_connected(self.ef_dim).
@@ -220,7 +204,6 @@ class CondGAN(object):
              custom_conv2d(self.df_dim * 8, k_h=1, k_w=1, d_h=1, d_w=1).  # s16 * s16 * 128*8
              conv_batch_norm().
              apply(leaky_rectify, leakiness=0.2).
-             # custom_fully_connected(1))
              custom_conv2d(1, k_h=self.s16, k_w=self.s16, d_h=self.s16, d_w=self.s16))
 
         return template

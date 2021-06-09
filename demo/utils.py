@@ -20,16 +20,7 @@ def get_image(image_path, image_size, is_crop=False, bbox=None):
 
 
 def custom_crop(img, bbox):
-    # bbox = [x-left, y-top, width, height]
     imsiz = img.shape  # [height, width, channel]
-    # if box[0] + box[2] >= imsiz[1] or\
-    #     box[1] + box[3] >= imsiz[0] or\
-    #     box[0] <= 0 or\
-    #     box[1] <= 0:
-    #     box[0] = np.maximum(0, box[0])
-    #     box[1] = np.maximum(0, box[1])
-    #     box[2] = np.minimum(imsiz[1] - box[0] - 1, box[2])
-    #     box[3] = np.minimum(imsiz[0] - box[1] - 1, box[3])
     center_x = int((2 * bbox[0] + bbox[2]) / 2)
     center_y = int((2 * bbox[1] + bbox[3]) / 2)
     R = int(np.maximum(bbox[2], bbox[3]) * 0.75)
@@ -45,7 +36,7 @@ def transform(image, image_size, is_crop, bbox):
     image = colorize(image)
     if is_crop:
         image = custom_crop(image, bbox)
-    #
+    
     transformed_image =\
         resize(image, [image_size, image_size])
     return np.array(transformed_image)

@@ -37,6 +37,13 @@ Type the following command to generate bird samples from sentences.:
 
 The results will be saved to **Data/birds/example_captions-skip-thought/**. 
 
+## By: 
+## Jill Barot
+## Kaushal Makadia
+## Romy Patel
+## Roshni Goinka
+## Saloni Padariya
+
 
 
 
